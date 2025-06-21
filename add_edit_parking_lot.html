@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4 shadow-lg animate-section vibrant-card">
+            <h2 class="card-title text-center mb-4">
+                {% if lot %}Edit Parking Lot{% else %}Add New Parking Lot{% endif %} for PARKEASY
+            </h2>
+            <form action="{% if lot %}{{ url_for('edit_parking_lot', lot_id=lot.id) }}{% else %}{{ url_for('add_parking_lot') }}{% endif %}" method="POST">
+                <div class="mb-3">
+                    <label for="prime_location_name" class="form-label">Prime Location Name</label>
+                    <input type="text" class="form-control" id="prime_location_name" name="prime_location_name" value="{{ lot.prime_location_name if lot else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ lot.address if lot else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="pin_code" class="form-label">Pin Code</label>
+                    <input type="text" class="form-control" id="pin_code" name="pin_code" value="{{ lot.pin_code if lot else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="price_per_hour" class="form-label">Price Per Hour ($)</label>
+                    <input type="number" step="0.01" class="form-control" id="price_per_hour" name="price_per_hour" value="{{ lot.price_per_hour if lot else '0.00' }}" min="0" required>
+                </div>
+                <div class="mb-3">
+                    <label for="maximum_number_of_spots" class="form-label">Maximum Number of Spots</label>
+                    <input type="number" class="form-control" id="maximum_number_of_spots" name="maximum_number_of_spots" value="{{ lot.maximum_number_of_spots if lot else '1' }}" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary-vibrant w-100 animate-button-sm">
+                    {% if lot %}<i class="fas fa-save me-2"></i> Update Parking Lot{% else %}<i class="fas fa-plus-circle me-2"></i> Add Parking Lot{% endif %}
+                </button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary w-100 mt-2 animate-button-sm">
+                    <i class="fas fa-times-circle me-2"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    /* New vibrant colors (re-defined here for clarity, should be in base.html) */
+    .text-primary-vibrant { color: #007bff; }
+    .text-success-vibrant { color: #28a745; }
+    .text-warning-vibrant { color: #ffc107; }
+
+    .bg-info-vibrant { background-color: #17a2b8 !important; }
+    .bg-secondary-vibrant { background-color: #6c757d !important; }
+    .bg-success-vibrant { background-color: #28a745 !important; }
+    .bg-danger-vibrant { background-color: #dc3545 !important; }
+    .bg-warning-vibrant { background-color: #ffc107 !important; }
+    .btn-primary-vibrant { background-color: #007bff; border-color: #007bff; }
+    .btn-primary-vibrant:hover { background-color: #0056b3; border-color: #0056b3; box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important; }
+    .btn-warning-vibrant { background-color: #ffc107; border-color: #ffc107; color: #212529; }
+    .btn-warning-vibrant:hover { background-color: #e0a800; border-color: #d39e00; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3) !important; }
+
+    /* Enhanced shadows for cards and buttons */
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+
+    /* Vibrant card style */
+    .vibrant-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .vibrant-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1.5rem 4rem rgba(0,0,0,.2)!important;
+    }
+
+    /* Animations from base.html (repeated for clarity within this specific file) */
+    .animate-button {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1);
+    }
+    .animate-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .animate-button-sm {
+        transition: all 0.2s ease-in-out;
+    }
+    .animate-button-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .animate-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInSlideUp 0.7s ease-out forwards;
+    }
+</style>
+{% endblock %}

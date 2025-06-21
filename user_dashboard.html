@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-center">User Dashboard</h2>
+
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card p-4 shadow-lg animate-section vibrant-card">
+            <h3 class="mb-3 d-flex align-items-center text-primary-vibrant">
+                <i class="fas fa-calendar-check me-2"></i> Your Current Reservations
+            </h3>
+            {% if user_reservations %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-striped vibrant-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reservation ID</th>
+                            <th>Parking Lot</th>
+                            <th>Spot Number</th>
+                            <th>Parking Time</th>
+                            <th>Price/Hour($)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in user_reservations %}
+                        <tr style="animation: fadeIn 0.5s ease-out forwards; ">
+                            <td>{{ reservation.reservation_id }}</td>
+                            <td>{{ reservation.prime_location_name }} ({{ reservation.address }})</td>
+                            <td><span class="badge bg-info-vibrant">{{ reservation.spot_number }}</span></td>
+                            <td>{{ reservation.parking_timestamp }}</td>
+                            <td><span class="badge bg-secondary-vibrant">${{ "{:.2f}".format(reservation.price_per_hour) }}</span></td>
+                            <td>
+                                <form action="{{ url_for('release_spot', reservation_id=reservation.reservation_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to release this parking spot?');">
+                                    <button type="submit" class="btn btn-sm btn-warning-vibrant animate-button-sm">
+                                        <i class="fas fa-parking me-2"></i> Release Spot
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="alert alert-info text-center vibrant-alert">
+                    <i class="fas fa-info-circle me-2"></i> You do not have any active parking reservations.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card p-4 shadow-lg animate-section vibrant-card">
+            <h3 class="mb-3 d-flex align-items-center text-success-vibrant">
+                <i class="fas fa-map-marked-alt me-2"></i> Available Parking Lots
+            </h3>
+            {% if parking_lots_summary %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-striped vibrant-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Location</th>
+                            <th>Address</th>
+                            <th>Pin Code</th>
+                            <th>Price/Hour ($)</th>
+                            <th>Total Spots</th>
+                            <th>Available Spots</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot_summary in parking_lots_summary %}
+                        <tr style="animation: fadeIn 0.5s ease-out forwards; ">
+                            <td>{{ lot_summary.prime_location_name }}</td>
+                            <td>{{ lot_summary.address }}</td>
+                            <td>{{ lot_summary.pin_code }}</td>
+                            <td><span class="badge bg-secondary-vibrant">${{ "{:.2f}".format(lot_summary.price_per_hour) }}</span></td>
+                            <td>{{ lot_summary.total_spots }}</td>
+                            <td>
+                                {% if lot_summary.available_spots > 0 %}
+                                    <span class="badge bg-success-vibrant">{{ lot_summary.available_spots }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger-vibrant">Full</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="{{ url_for('book_spot', lot_id=lot_summary.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-primary-vibrant animate-button-sm" {% if lot_summary.available_spots == 0 or user_reservations %} disabled {% endif %} title="Book a parking spot">
+                                        <i class="fas fa-car-alt me-1"></i> Book Spot
+                                    </button>
+                                </form>
+                                {% if user_reservations %}
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-exclamation-triangle text-warning-vibrant me-1"></i> Release current spot to book new.
+                                    </small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="alert alert-warning text-center vibrant-alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> No parking lots are currently available. Please check back later.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    /* New vibrant colors */
+    .text-primary-vibrant { color: #007bff; } /* Retaining original blue for icons, as it's typically strong */
+    .text-success-vibrant { color: #28a745; } /* Retaining original green for icons */
+    .text-warning-vibrant { color: #ffc107; } /* Retaining original warning yellow */
+
+    .bg-info-vibrant { background-color: #17a2b8 !important; }
+    .bg-secondary-vibrant { background-color: #6c757d !important; } /* A slightly deeper grey */
+    .bg-success-vibrant { background-color: #28a745 !important; } /* A brighter green */
+    .bg-danger-vibrant { background-color: #dc3545 !important; } /* A more assertive red */
+    .bg-warning-vibrant { background-color: #ffc107 !important; } /* A clear yellow */
+    .btn-primary-vibrant { background-color: #007bff; border-color: #007bff; }
+    .btn-primary-vibrant:hover { background-color: #0056b3; border-color: #0056b3; box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important; }
+    .btn-warning-vibrant { background-color: #ffc107; border-color: #ffc107; color: #212529; }
+    .btn-warning-vibrant:hover { background-color: #e0a800; border-color: #d39e00; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3) !important; }
+
+    /* Enhanced shadows for cards and buttons */
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; /* Stronger shadow */
+    }
+
+    /* Vibrant card style */
+    .vibrant-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%); /* Subtle gradient for depth */
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .vibrant-card:hover {
+        transform: translateY(-8px); /* More pronounced lift */
+        box-shadow: 0 1.5rem 4rem rgba(0,0,0,.2)!important;
+    }
+
+    /* Table enhancements */
+    .vibrant-table thead th {
+        background-color: #e9ecef; /* Keep light header */
+        color: #34495e; /* Darker text */
+        font-weight: 600;
+    }
+    .vibrant-table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa; /* Lighter stripe */
+    }
+    .vibrant-table tbody tr:hover {
+        background-color: #e2f4ff; /* A light blue hover for vibrancy */
+        transform: scale(1.005); /* Slight scale on hover */
+        box-shadow: 0 2px 10px rgba(0, 123, 255, 0.1);
+    }
+
+    /* Alert vibrancy */
+    .vibrant-alert {
+        border-radius: 12px;
+        font-weight: 500;
+        animation: pulseAlert 1.5s infinite alternate; /* Gentle pulsing for alerts */
+    }
+
+    @keyframes pulseAlert {
+        from { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+        to { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+    }
+
+    /* Animations from base.html (repeated for clarity within this specific file) */
+    .animate-button {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1);
+    }
+    .animate-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .animate-button-sm {
+        transition: all 0.2s ease-in-out;
+    }
+    .animate-button-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .animate-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInSlideUp 0.7s ease-out forwards;
+    }
+    .animate-section:nth-child(2) {
+        animation-delay: 0.2s; /* Stagger animation for the second section */
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-center">Parking Spots for {{ lot.prime_location_name }} ({{ lot.address }})</h2>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10 col-lg-8">
+        <div class="card p-4 shadow-lg animate-section vibrant-card">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h3 class="mb-0 d-flex align-items-center text-primary-vibrant">
+                    <i class="fas fa-car-space me-2"></i> Spot Details
+                </h3>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary animate-button-sm">
+                    <i class="fas fa-arrow-alt-circle-left me-2"></i> Back to Dashboard
+                </a>
+            </div>
+
+            {% if parking_spots %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-striped vibrant-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Spot Number</th>
+                            <th>Status</th>
+                            <th>Reserved By</th>
+                            <th>Parking Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for spot in parking_spots %}
+                        <tr style="animation: fadeIn 0.5s ease-out forwards; ">
+                            <td><span class="badge bg-info-vibrant">{{ spot.spot_number }}</span></td>
+                            <td>
+                                {% if spot.status == 'A' %}
+                                    <span class="badge bg-success-vibrant">Available</span>
+                                {% else %}
+                                    <span class="badge bg-danger-vibrant">Occupied</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ spot.reserved_by_username if spot.reserved_by_username else 'N/A' }}</td>
+                            <td>{{ spot.parking_timestamp if spot.parking_timestamp else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="alert alert-info text-center vibrant-alert">
+                    <i class="fas fa-info-circle me-2"></i> No parking spots found for this lot.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    /* New vibrant colors (re-defined here for clarity, should be in base.html) */
+    .text-primary-vibrant { color: #007bff; }
+    .text-success-vibrant { color: #28a745; }
+    .text-warning-vibrant { color: #ffc107; }
+
+    .bg-info-vibrant { background-color: #17a2b8 !important; }
+    .bg-secondary-vibrant { background-color: #6c757d !important; }
+    .bg-success-vibrant { background-color: #28a745 !important; }
+    .bg-danger-vibrant { background-color: #dc3545 !important; }
+    .bg-warning-vibrant { background-color: #ffc107 !important; }
+    .btn-primary-vibrant { background-color: #007bff; border-color: #007bff; }
+    .btn-primary-vibrant:hover { background-color: #0056b3; border-color: #0056b3; box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important; }
+    .btn-warning-vibrant { background-color: #ffc107; border-color: #ffc107; color: #212529; }
+    .btn-warning-vibrant:hover { background-color: #e0a800; border-color: #d39e00; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3) !important; }
+
+    /* Enhanced shadows for cards and buttons */
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+
+    /* Vibrant card style */
+    .vibrant-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .vibrant-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1.5rem 4rem rgba(0,0,0,.2)!important;
+    }
+
+    /* Table enhancements */
+    .vibrant-table thead th {
+        background-color: #e9ecef; /* Keep light header */
+        color: #34495e; /* Darker text */
+        font-weight: 600;
+    }
+    .vibrant-table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa; /* Lighter stripe */
+    }
+    .vibrant-table tbody tr:hover {
+        background-color: #e2f4ff; /* A light blue hover for vibrancy */
+        transform: scale(1.005); /* Slight scale on hover */
+        box-shadow: 0 2px 10px rgba(0, 123, 255, 0.1);
+    }
+
+    /* Alert vibrancy */
+    .vibrant-alert {
+        border-radius: 12px;
+        font-weight: 500;
+        animation: pulseAlert 1.5s infinite alternate; /* Gentle pulsing for alerts */
+    }
+
+    @keyframes pulseAlert {
+        from { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+        to { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+    }
+
+    /* Animations from base.html (repeated for clarity within this specific file) */
+    .animate-button {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1);
+    }
+    .animate-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .animate-button-sm {
+        transition: all 0.2s ease-in-out;
+    }
+    .animate-button-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .animate-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInSlideUp 0.7s ease-out forwards;
+    }
+</style>
+{% endblock %}

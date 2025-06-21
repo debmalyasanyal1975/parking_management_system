@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-center">Admin: Manage Users</h2>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10 col-lg-8">
+        <div class="card p-4 shadow-lg animate-section vibrant-card">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h3 class="mb-0 d-flex align-items-center text-primary-vibrant">
+                    <i class="fas fa-users me-2"></i> All Registered Users
+                </h3>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary animate-button-sm">
+                    <i class="fas fa-arrow-alt-circle-left me-2"></i> Back to Dashboard
+                </a>
+            </div>
+
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-striped vibrant-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr style="animation: fadeIn 0.5s ease-out forwards; ">
+                            <td><span class="badge bg-info-vibrant">{{ user.id }}</span></td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                                <span class="badge {% if user.role == 'admin' %}bg-danger-vibrant{% else %}bg-success-vibrant{% endif %}">
+                                    {{ user.role.capitalize() }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.role != 'admin' and user.id != session.get('user_id') %}
+                                <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete user {{ user.username }}? This action cannot be undone.');">
+                                    <button type="submit" class="btn btn-sm btn-danger animate-button-sm">
+                                        <i class="fas fa-user-times me-1"></i> Delete User
+                                    </button>
+                                </form>
+                                {% else %}
+                                    <span class="text-muted">Cannot Delete</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="alert alert-info text-center vibrant-alert">
+                    <i class="fas fa-info-circle me-2"></i> No users registered yet (apart from admin).
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    /* New vibrant colors (re-defined here for clarity, should be in base.html) */
+    .text-primary-vibrant { color: #007bff; }
+    .text-success-vibrant { color: #28a745; }
+    .text-warning-vibrant { color: #ffc107; }
+
+    .bg-info-vibrant { background-color: #17a2b8 !important; }
+    .bg-secondary-vibrant { background-color: #6c757d !important; }
+    .bg-success-vibrant { background-color: #28a745 !important; }
+    .bg-danger-vibrant { background-color: #dc3545 !important; }
+    .bg-warning-vibrant { background-color: #ffc107 !important; }
+    .btn-primary-vibrant { background-color: #007bff; border-color: #007bff; }
+    .btn-primary-vibrant:hover { background-color: #0056b3; border-color: #0056b3; box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3) !important; }
+    .btn-warning-vibrant { background-color: #ffc107; border-color: #ffc107; color: #212529; }
+    .btn-warning-vibrant:hover { background-color: #e0a800; border-color: #d39e00; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3) !important; }
+
+    /* Enhanced shadows for cards and buttons */
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+
+    /* Vibrant card style */
+    .vibrant-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .vibrant-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1.5rem 4rem rgba(0,0,0,.2)!important;
+    }
+
+    /* Table enhancements */
+    .vibrant-table thead th {
+        background-color: #e9ecef;
+        color: #34495e;
+        font-weight: 600;
+    }
+    .vibrant-table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+    }
+    .vibrant-table tbody tr:hover {
+        background-color: #e2f4ff;
+        transform: scale(1.005);
+        box-shadow: 0 2px 10px rgba(0, 123, 255, 0.1);
+    }
+
+    /* Alert vibrancy */
+    .vibrant-alert {
+        border-radius: 12px;
+        font-weight: 500;
+        animation: pulseAlert 1.5s infinite alternate;
+    }
+
+    @keyframes pulseAlert {
+        from { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+        to { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+    }
+
+    /* Animations from base.html (repeated for clarity within this specific file) */
+    .animate-button {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1);
+    }
+    .animate-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .animate-button-sm {
+        transition: all 0.2s ease-in-out;
+    }
+    .animate-button-sm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .animate-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInSlideUp 0.7s ease-out forwards;
+    }
+</style>
+{% endblock %}
